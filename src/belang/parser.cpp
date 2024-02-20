@@ -6,8 +6,7 @@
  */
 
 /*
-  What will this shit even do?
-    It will parse tokens from Lexer module to AST (Abstract Syntax Tree).
+  It will parse tokens from Lexer module to AST (Abstract Syntax Tree).
 For example:
 ```
 <Identifier "print">
@@ -27,17 +26,6 @@ FunctionCall(name="print", args=[
         FloatConstant(2.4),
     ),
 ])
-
-  Why this shit even needed?
-    Because then Executor module will search for FunctionCall or
-IfStatement, WhileStatement, and so on, and (un/conditional) execute it.
-
-  Is it waste of time?
-    It's used in modern programming languages, so, probably not.
-
-  Probably best implementation
-    Split every node to it's own header file, make it so fucking OOP, that
-even Lexer module (the most OOP shit I ever made) will be more functional.
 */
 
 #include "belang/lexer.hpp"
@@ -939,7 +927,7 @@ Middle result: <AddNode(AddNode(AddNode(1, 2), MultiplyNode(3, 4)), 5)>
 No more operators left.
 ez
 
-Next hard part: How to mix result and operators, do that left/right shit with operators?
+Next hard part: How to mix result and operators, do that left/right things with operators?
 
 Simple parse all as parser nodes (ints to IntConstant, floats to FloatConstant, etc.)
 Then there are 2 vectors: numbers and operators.
@@ -1036,7 +1024,7 @@ parse(tokens)
                                 # Simple int constant, returning IntConstantValue(2)
                         # Returning ArraySliceNode("array", IntConstantValue(2))
                     # Next token is math operator, so
-                    # Parse every shit in between all math operators, the most left is already parsed
+                    # Parse everything in between all math operators, the most left is already parsed
                     parseTerm()
                         # Found int constant, so returing IntConstantValue(1)
                     # Now get priorities by operators
