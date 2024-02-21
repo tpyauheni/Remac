@@ -1267,7 +1267,7 @@ std::tuple<AstNode *, unsigned long> Parser::parseTerm(unsigned long index) {
         case TokenType::LPAREN: {
             std::tuple<AstNode *, unsigned long> expr = parseExpression(index + 1);
             unsigned long tokensLength = std::get<1>(expr);
-            return { std::get<0>(expr), tokensLength + 1 };
+            return { std::get<0>(expr), tokensLength + 2 };
         }
         case TokenType::STRING: {
             return { new StringConstantNode(this->tokens[index].content), 1 };
@@ -1286,7 +1286,7 @@ std::tuple<FunctionCallNode *, unsigned long> Parser::parseFunctionCall(unsigned
     }
 
     std::tuple<SequenceNode *, unsigned long> sequence = this->parseEnclosed(index + 1, TokenType::RPAREN);
-    return { new FunctionCallNode(this->tokens[index].content, std::get<0>(sequence)), std::get<1>(sequence) + 1 };
+    return { new FunctionCallNode(this->tokens[index].content, std::get<0>(sequence)), std::get<1>(sequence) + 2 };
 }
 
 std::tuple<SequenceNode *, unsigned long> Parser::parseEnclosed(unsigned long index, TokenType stop) {
