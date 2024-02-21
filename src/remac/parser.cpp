@@ -439,7 +439,18 @@ ListDefinitionNode::ListDefinitionNode(SequenceNode *array) {
 }
 
 std::string ListDefinitionNode::toString() {
-    return "<ListDefinitionNode: [todo!()]>";
+    std::string str = "<ListDefinitionNode: [";
+    std::vector<AstNode *> args = this->array->getSequence();
+
+    for (auto itr = args.cbegin(); itr != args.cend(); ++itr) {
+        str += (*itr)->toString();
+
+        if (itr + 1 != args.cend()) {
+            str += ", ";
+        }
+    }
+
+    return str + "]>";
 }
 
 unsigned long ListDefinitionNode::getByteLength() {
@@ -776,7 +787,7 @@ IntConstantNode::IntConstantNode(long long value) {
 
 std::string IntConstantNode::toString() {
     std::string str = "<IntConstantNode value=";
-    str += this->value;
+    str += std::to_string(this->value);
     str += ">";
     return str;
 }
@@ -1319,10 +1330,16 @@ std::vector<PrioritizedOperator> Parser::getPriorities(std::vector<Token> tokens
             throw new ParserException("Expected operator");
         }
 
-        if (itr->content == "+" || itr->content == "-") {
+        if (itr->content == "+") {
             opers.push_back(PrioritizedOperator { .type = AstNode::NodeType::NODE_OPERATION_ADD, .priority = 101 });
-        } else if (itr->content == "*" || itr->content == "/" || itr->content == "%") {
-            opers.push_back(PrioritizedOperator { .type = AstNode::NodeType::NODE_OPERATION_ADD, .priority = 102 });
+        } else if (itr->content == "-") {
+            opers.push_back(PrioritizedOperator { .type = AstNode::NodeType::NODE_OPERATION_SUBTRACT, .priority = 101 });
+        } else if (itr->content == "*") {
+            opers.push_back(PrioritizedOperator { .type = AstNode::NodeType::NODE_OPERATION_MULTIPLY, .priority = 102 });
+        } else if (itr->content == "/") {
+            opers.push_back(PrioritizedOperator { .type = AstNode::NodeType::NODE_OPERATION_DIVIDE, .priority = 102 });
+        } else if (itr->content == "%") {
+            opers.push_back(PrioritizedOperator { .type = AstNode::NodeType::NODE_OPERATION_MOD, .priority = 102 });
         } else {
             throw new ParserException("Unknown operator");
         }
