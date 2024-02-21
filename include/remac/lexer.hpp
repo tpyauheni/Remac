@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef BELCOMP_BELANG_LEXER
-#define BELCOMP_BELANG_LEXER 1
+#ifndef REMAC_LEXER
+#define REMAC_LEXER 1
 
 #include <remac/utf8.hpp>
 
@@ -194,4 +194,4 @@ private:
 
 }
 
-#endif // BELCOMP_BELANG_LEXER
+#endif // REMAC_LEXER

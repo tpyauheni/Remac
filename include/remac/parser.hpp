@@ -1,8 +1,6 @@
 #pragma once
-#ifndef BELCOMP_BELANG_PARSER
-#define BELCOMP_BELANG_PARSER 1
-
-// TODO: Computer gives permissions to do something (for example, when it checks checbox "Write to files", function `FileWrite(name, text)` will become available)
+#ifndef REMAC_PARSER
+#define REMAC_PARSER 1
 
 #include <remac/utf8.hpp>
 #include <remac/lexer.hpp>
@@ -57,6 +55,10 @@ public:
 
     virtual NodeType getType();
 
+    virtual bool equalTo(AstNode *node) = 0;
+
+    bool equals(AstNode *node);
+
     virtual ~AstNode() = 0;
 };
 
@@ -76,6 +78,8 @@ public:
     NodeType getType() override;
 
     std::vector<AstNode *> getSequence();
+
+    bool equalTo(AstNode *node) override;
 
     ~SequenceNode() override;
 };
@@ -103,6 +107,8 @@ public:
     std::string getName();
     SequenceNode *getArgs();
 
+    bool equalTo(AstNode *node) override;
+
     ~FunctionCallNode() override;
 };
 
@@ -125,6 +131,8 @@ public:
     NodeType getType() override;
 
     SequenceNode *getBody();
+
+    bool equalTo(AstNode *node) override;
 
     ~ProgramNode() override;
 };
@@ -154,6 +162,8 @@ public:
     SequenceNode *getBody();
     SequenceNode *getElseBody();
 
+    bool equalTo(AstNode *node) override;
+
     ~IfStatementNode() override;
 };
 
@@ -179,6 +189,8 @@ public:
 
     AstNode *getCondition();
     SequenceNode *getBody();
+
+    bool equalTo(AstNode *node) override;
 
     ~WhileStatementNode() override;
 };
@@ -221,6 +233,8 @@ public:
     SequenceNode *getIncrementBody();
     SequenceNode *getBody();
 
+    bool equalTo(AstNode *node) override;
+
     ~ForStatementNode() override;
 };
 
@@ -247,6 +261,8 @@ public:
     std::string getName();
     AstNode *getValue();
 
+    bool equalTo(AstNode *node) override;
+
     ~VariableAssignmentNode() override;
 };
 
@@ -271,6 +287,8 @@ public:
 
     SequenceNode *getArray();
 
+    bool equalTo(AstNode *node) override;
+
     ~ListDefinitionNode() override;
 };
 
@@ -290,7 +308,10 @@ public:
 
     NodeType getType() override;
 
+    AstNode *getArray();
     AstNode *getValue();
+
+    bool equalTo(AstNode *node) override;
 
     ~ListSliceNode() override;
 };
@@ -311,6 +332,8 @@ public:
     NodeType getType() override;
 
     std::string getName();
+
+    bool equalTo(AstNode *node) override;
 
     ~VariableReferenceNode() override;
 };
@@ -340,6 +363,8 @@ public:
     AstNode *getLeft();
     AstNode *getRight();
 
+    bool equalTo(AstNode *node) override;
+
     ~OperationAddNode() override;
 };
 
@@ -365,6 +390,8 @@ public:
 
     AstNode *getLeft();
     AstNode *getRight();
+
+    bool equalTo(AstNode *node) override;
 
     ~OperationSubtractNode() override;
 };
@@ -392,6 +419,8 @@ public:
     AstNode *getLeft();
     AstNode *getRight();
 
+    bool equalTo(AstNode *node) override;
+
     ~OperationMultiplyNode() override;
 };
 
@@ -417,6 +446,8 @@ public:
 
     AstNode *getLeft();
     AstNode *getRight();
+
+    bool equalTo(AstNode *node) override;
 
     ~OperationDivideNode() override;
 };
@@ -444,6 +475,8 @@ public:
     AstNode *getLeft();
     AstNode *getRight();
 
+    bool equalTo(AstNode *node) override;
+
     ~OperationModNode() override;
 };
 
@@ -466,6 +499,8 @@ public:
     NodeType getType() override;
 
     long long getValue();
+
+    bool equalTo(AstNode *node) override;
 
     ~IntConstantNode() override;
 };
@@ -490,6 +525,8 @@ public:
 
     double getValue();
 
+    bool equalTo(AstNode *node) override;
+
     ~FloatConstantNode() override;
 };
 
@@ -512,6 +549,8 @@ public:
     NodeType getType() override;
 
     std::string getValue();
+
+    bool equalTo(AstNode *node) override;
 
     ~StringConstantNode() override;
 };
@@ -567,4 +606,4 @@ public:
 
 }
 
-#endif // BELCOMP_BELANG_PARSER
+#endif // REMAC_PARSER

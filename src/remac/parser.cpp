@@ -51,6 +51,14 @@ AstNode::NodeType AstNode::getType() {
     return AstNode::NodeType::NODE_EMPTY;
 }
 
+bool AstNode::equals(AstNode *node) {
+    if (this->getType() != node->getType()) {
+        return false;
+    }
+
+    return this->equalTo(node);
+}
+
 SequenceNode::SequenceNode(std::vector<AstNode *> nodes) {
     this->nodes = nodes;
 }
@@ -112,6 +120,10 @@ AstNode::NodeType SequenceNode::getType() {
 
 std::vector<AstNode *> SequenceNode::getSequence() {
     return this->nodes;
+}
+
+bool SequenceNode::equalTo(AstNode *node) {
+    return this->nodes == static_cast<SequenceNode *>(node)->getSequence();
 }
 
 SequenceNode::~SequenceNode() {
@@ -177,6 +189,10 @@ SequenceNode *FunctionCallNode::getArgs() {
     return this->args;
 }
 
+bool FunctionCallNode::equalTo(AstNode *node) {
+    return this->name == static_cast<FunctionCallNode *>(node)->getName() && this->args->equals(static_cast<FunctionCallNode *>(node)->getArgs());
+}
+
 FunctionCallNode::~FunctionCallNode() {
     delete this->args;
 }
@@ -211,6 +227,10 @@ AstNode::NodeType ProgramNode::getType() {
 
 SequenceNode *ProgramNode::getBody() {
     return this->body;
+}
+
+bool ProgramNode::equalTo(AstNode *node) {
+    return this->body->equals(static_cast<ProgramNode *>(node)->getBody());
 }
 
 ProgramNode::~ProgramNode() {
@@ -266,6 +286,10 @@ SequenceNode *IfStatementNode::getElseBody() {
     return this->elseBranch;
 }
 
+bool IfStatementNode::equalTo(AstNode *node) {
+    return this->condition->equals(static_cast<IfStatementNode *>(node)->getCondition()) && this->ifBranch->equals(static_cast<IfStatementNode *>(node)->getBody()) && this->elseBranch->equals(static_cast<IfStatementNode *>(node)->getElseBody());
+}
+
 IfStatementNode::~IfStatementNode() {
     delete this->condition;
     delete this->ifBranch;
@@ -311,6 +335,10 @@ AstNode *WhileStatementNode::getCondition() {
 
 SequenceNode *WhileStatementNode::getBody() {
     return this->body;
+}
+
+bool WhileStatementNode::equalTo(AstNode *node) {
+    return this->condition->equals(static_cast<WhileStatementNode *>(node)->getCondition()) && this->body->equals(static_cast<WhileStatementNode *>(node)->getBody());
 }
 
 WhileStatementNode::~WhileStatementNode() {
@@ -379,6 +407,10 @@ SequenceNode *ForStatementNode::getBody() {
     return this->body;
 }
 
+bool ForStatementNode::equalTo(AstNode *node) {
+    return this->initializationBody->equals(static_cast<ForStatementNode *>(node)->getInitializationBody()) && this->condition->equals(static_cast<ForStatementNode *>(node)->getCondition()) && this->incrementBody->equals(static_cast<ForStatementNode *>(node)->getIncrementBody()) && this->body->equals(static_cast<ForStatementNode *>(node)->getBody());
+}
+
 ForStatementNode::~ForStatementNode() {
     delete this->condition;
     delete this->initializationBody;
@@ -430,6 +462,10 @@ AstNode *VariableAssignmentNode::getValue() {
     return this->value;
 }
 
+bool VariableAssignmentNode::equalTo(AstNode *node) {
+    return this->name == static_cast<VariableAssignmentNode *>(node)->name && this->value->equals(static_cast<VariableAssignmentNode *>(node)->getValue());
+}
+
 VariableAssignmentNode::~VariableAssignmentNode() {
     delete this->value;
 }
@@ -473,6 +509,10 @@ SequenceNode *ListDefinitionNode::getArray() {
     return this->array;
 }
 
+bool ListDefinitionNode::equalTo(AstNode *node) {
+    return this->array->equals(static_cast<ListDefinitionNode *>(node)->getArray());
+}
+
 ListDefinitionNode::~ListDefinitionNode() {
     delete this->array;
 }
@@ -506,6 +546,18 @@ unsigned long ListSliceNode::fromBytes(void *buffer) {
 
 AstNode::NodeType ListSliceNode::getType() {
     return AstNode::NodeType::NODE_LIST_SLICE;
+}
+
+AstNode *ListSliceNode::getArray() {
+    return this->array;
+}
+
+AstNode *ListSliceNode::getValue() {
+    return this->value;
+}
+
+bool ListSliceNode::equalTo(AstNode *node) {
+    return this->array->equals(static_cast<ListSliceNode *>(node)->getArray()) && this->value->equals(static_cast<ListSliceNode *>(node)->getValue());
 }
 
 ListSliceNode::~ListSliceNode() {
@@ -542,6 +594,10 @@ AstNode::NodeType VariableReferenceNode::getType() {
 
 std::string VariableReferenceNode::getName() {
     return this->name;
+}
+
+bool VariableReferenceNode::equalTo(AstNode *node) {
+    return this->name == static_cast<VariableReferenceNode *>(node)->name;
 }
 
 VariableReferenceNode::~VariableReferenceNode() {}
@@ -586,6 +642,10 @@ AstNode *OperationAddNode::getLeft() {
 
 AstNode *OperationAddNode::getRight() {
     return this->right;
+}
+
+bool OperationAddNode::equalTo(AstNode *node) {
+    return this->left->equals(static_cast<OperationAddNode *>(node)->left) && this->right->equals(static_cast<OperationAddNode *>(node)->right);
 }
 
 OperationAddNode::~OperationAddNode() {
@@ -635,6 +695,10 @@ AstNode *OperationSubtractNode::getRight() {
     return this->right;
 }
 
+bool OperationSubtractNode::equalTo(AstNode *node) {
+    return this->left->equals(static_cast<OperationSubtractNode *>(node)->left) && this->right->equals(static_cast<OperationSubtractNode *>(node)->right);
+}
+
 OperationSubtractNode::~OperationSubtractNode() {
     delete this->left;
     delete this->right;
@@ -680,6 +744,10 @@ AstNode *OperationMultiplyNode::getLeft() {
 
 AstNode *OperationMultiplyNode::getRight() {
     return this->right;
+}
+
+bool OperationMultiplyNode::equalTo(AstNode *node) {
+    return this->left->equals(static_cast<OperationMultiplyNode *>(node)->left) && this->right->equals(static_cast<OperationMultiplyNode *>(node)->right);
 }
 
 OperationMultiplyNode::~OperationMultiplyNode() {
@@ -729,6 +797,10 @@ AstNode *OperationDivideNode::getRight() {
     return this->right;
 }
 
+bool OperationDivideNode::equalTo(AstNode *node) {
+    return this->left->equals(static_cast<OperationDivideNode *>(node)->left) && this->right->equals(static_cast<OperationDivideNode *>(node)->right);
+}
+
 OperationDivideNode::~OperationDivideNode() {
     delete this->left;
     delete this->right;
@@ -776,6 +848,10 @@ AstNode *OperationModNode::getRight() {
     return this->right;
 }
 
+bool OperationModNode::equalTo(AstNode *node) {
+    return this->left->equals(static_cast<OperationModNode *>(node)->left) && this->right->equals(static_cast<OperationModNode *>(node)->right);
+}
+
 OperationModNode::~OperationModNode() {
     delete this->left;
     delete this->right;
@@ -814,6 +890,10 @@ long long IntConstantNode::getValue() {
     return this->value;
 }
 
+bool IntConstantNode::equalTo(AstNode *node) {
+    return this->value == static_cast<IntConstantNode *>(node)->getValue();
+}
+
 IntConstantNode::~IntConstantNode() {}
 
 FloatConstantNode::FloatConstantNode(double value) {
@@ -849,6 +929,10 @@ double FloatConstantNode::getValue() {
     return this->value;
 }
 
+bool FloatConstantNode::equalTo(AstNode *node) {
+    return this->value == static_cast<FloatConstantNode *>(node)->getValue();
+}
+
 FloatConstantNode::~FloatConstantNode() {}
 
 StringConstantNode::StringConstantNode(std::string value) {
@@ -882,6 +966,10 @@ AstNode::NodeType StringConstantNode::getType() {
 
 std::string StringConstantNode::getValue() {
     return this->value;
+}
+
+bool StringConstantNode::equalTo(AstNode *node) {
+    return this->value == static_cast<StringConstantNode *>(node)->getValue();
 }
 
 StringConstantNode::~StringConstantNode() {}

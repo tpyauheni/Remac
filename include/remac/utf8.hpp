@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef BELCOMP_BELANG_UTF8
-#define BELCOMP_BELANG_UTF8 1
+#ifndef REMAC_UTF8
+#define REMAC_UTF8 1
 
 #include <tuple>
 #include <string>
@@ -43,4 +43,4 @@ std::string charToString(char chr);
 
 }
 
-#endif // BELCOMP_BELANG_UTF8
+#endif // REMAC_UTF8
