@@ -15,7 +15,7 @@ OPT_LEVEL = var('OPT_LEVEL', '0')
 INCLUDES = arrvar('INCLUDES', ['include'])
 INCLUDES = [f'-I{include}' for include in INCLUDES]
 CFLAGS_STATIC = arrvar('CFLAGS_STATIC', ['-Wall', '-Wextra', '-Werror', f'-g{DEBUG_LEVEL}', f'-O{OPT_LEVEL}', '-std=c17', *INCLUDES])
-CCFLAGS_STATIC = arrvar('CCFLAGS_STATIC', ['-Wall', '-Wextra', '-Werror', f'-g{DEBUG_LEVEL}', f'-O{OPT_LEVEL}', '-std=c++17', *INCLUDES])
+CCFLAGS_STATIC = arrvar('CCFLAGS_STATIC', ['-Wall', '-Wextra', '-Werror', f'-g{DEBUG_LEVEL}', f'-O{OPT_LEVEL}', '-std=c++17', *INCLUDES, '-D_GLIBCXX_DEBUG'])
 CFLAGS_EXE = arrvar('CFLAGS_EXE', ['-Wall', '-Wextra', '-Werror', f'-g{DEBUG_LEVEL}', f'-O{OPT_LEVEL}', '-std=c++17', *INCLUDES])
 
 SRC_CC = wildcard('src', '**', '*', suffix='.c')

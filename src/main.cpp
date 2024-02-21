@@ -1,5 +1,5 @@
-#include "belang/parser.hpp"
-#include <belang/lexer.hpp>
+#include <remac/lexer.hpp>
+#include <remac/parser.hpp>
 
 #include <optional>
 #include <string>
@@ -15,7 +15,7 @@ int main() {
     std::string input = "Print([21, 5 * (2 + 1)])";
 
     std::printf(
-        "Belang v.%u.%u.%u%s by Pakul Yauheni Stanislavovich\n",
+        "Remac v.%u.%u.%u%s by Pakul Yauheni Stanislavovich\n",
         VERSION_MAJOR,
         VERSION_MINOR,
         VERSION_PATCH,
@@ -24,17 +24,19 @@ int main() {
     std::printf(">> ");
     std::fflush(stdout);
     std::cout << "WARNING: Debug mode, so input automatically filled" << std::endl; // std::cin >> input;
-    belang::Lexer lexer = belang::Lexer(input);
-    std::vector<belang::Token> tokens;
+    remac::Lexer lexer = remac::Lexer(input);
+    std::vector<remac::Token> tokens;
 
-    std::optional<belang::Token> last_token = lexer.next();
+    std::optional<remac::Token> last_token = lexer.next();
+    unsigned long i = 0;
     std::cout << "Lexical analyzer output:" << std::endl;
 
     while (last_token.has_value()) {
         last_token = lexer.findKeyword(*last_token);
+        std::cout << i++ << ". ";
         std::cout << last_token->to_string() << std::endl;
 
-        if (last_token->type == belang::TokenType::LEXER_ERROR) {
+        if (last_token->type == remac::TokenType::LEXER_ERROR) {
             return 1;
         }
 
@@ -45,9 +47,9 @@ int main() {
     std::cout << "\nParser output:" << std::endl;
 
     try {
-        belang::Parser parser = belang::Parser(tokens);
+        remac::Parser parser = remac::Parser(tokens);
         parser.parse()->print();
-    } catch (belang::ParserException *exc) {
+    } catch (remac::ParserException *exc) {
         std::cout << "Exception: " << exc->message << std::endl;
     }
 
