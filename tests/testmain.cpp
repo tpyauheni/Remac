@@ -1,5 +1,8 @@
 #include "testmain.hpp"
 
+static unsigned int TOTAL_TESTS = 0;
+static unsigned int PASSED_TESTS = 0;
+
 void test_module(std::string name) {
     std::printf("Testing module '%s'\n", name.c_str());
     std::fflush(stdout);

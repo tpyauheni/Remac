@@ -121,6 +121,7 @@ std::optional<Token> Lexer::next() {
             case TokenType::LPAREN:
             case TokenType::RPAREN:
             case TokenType::RBRACE:
+            case TokenType::STRING:
             case TokenType::RBRACKET: break;
 
             default: {
@@ -168,6 +169,7 @@ std::optional<Token> Lexer::next() {
             case TokenType::KEYWORD:
             case TokenType::RPAREN:
             case TokenType::LBRACE:
+            case TokenType::STRING:
             case TokenType::RBRACKET: break;
 
             default: {
@@ -219,6 +221,7 @@ std::optional<Token> Lexer::next() {
             case TokenType::RPAREN:
             case TokenType::LBRACKET:
             case TokenType::RBRACKET:
+            case TokenType::STRING:
             case TokenType::ARG_SEPARATOR: break;
 
             default: {
@@ -239,6 +242,7 @@ std::optional<Token> Lexer::next() {
             case TokenType::INT_NUMBER:
             case TokenType::FLOAT_NUMBER:
             case TokenType::RPAREN:
+            case TokenType::STRING:
             case TokenType::RBRACKET: break;
 
             default: {
@@ -451,19 +455,32 @@ Token Lexer::nextString(Utf8Char closingChar) {
                     buffer.push_back('\\');
                     break;
                 }
+                default: {
+                    if (closingChar.codePoint == chr.codePoint) {
+                        utfStringAppend(&buffer, chr);
+                    }
+                }
             }
 
             escaped = false;
+            buffer.push_back(Lexer::ESCAPE);
             utfStringAppend(&buffer, chr);
         } else {
             if (chr.bytes[0] == Lexer::ESCAPE) {
                 escaped = true;
+            } else {
+                utfStringAppend(&buffer, chr);
             }
+        }
+
+        if (this->index + 1 >= this->code.size()) {
+            return Token { .type = TokenType::LEXER_ERROR, .content = "Unexpected end of program. String is left unterminated", .line = line, .column = column };
         }
 
         chr = this->advanceChar();
     }
 
+    this->advanceChar(); // get next token to prevent analyzing same string
     return Token { .type = TokenType::STRING, .content = buffer, .line = line, .column = column };
 }
 

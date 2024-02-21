@@ -1256,6 +1256,10 @@ std::tuple<AstNode *, unsigned long> Parser::parseExpression(unsigned long index
     unsigned long length = termTokensLength;
     AstNode *leftNode = std::get<0>(leftTerm);
 
+    if (index >= this->tokens.size()) {
+        return leftTerm;
+    }
+
     if (this->tokens[index].type == TokenType::OPERATOR) {
         if (this->tokens[index].content == "=") {
             throw new ParserException("No assignment is allowed inside an expression");
@@ -1380,11 +1384,25 @@ std::tuple<AstNode *, unsigned long> Parser::parseTerm(unsigned long index) {
 }
 
 std::tuple<FunctionCallNode *, unsigned long> Parser::parseFunctionCall(unsigned long index) {
+    if (index + 2 >= this->tokens.size()) {
+        throw new ParserException("Expected function call, not program end");
+    }
+
     if (this->tokens[index].type != TokenType::IDENTIFIER) {
         throw new ParserException("Expected identifier to start function call");
     }
 
+    if (this->tokens[index + 1].type != TokenType::LPAREN) {
+        throw new ParserException("Expected left parentheses after function name");
+    }
+
+    if (this->tokens[index + 2].type == TokenType::RPAREN) {
+        return { new FunctionCallNode(this->tokens[index].content, new SequenceNode(std::vector<AstNode *>())), 3 };
+    }
+
     std::tuple<SequenceNode *, unsigned long> sequence = this->parseEnclosed(index + 1, TokenType::RPAREN);
+    // TODO: Check that all this->tokens[...] not exceeds its length, otherwise throw ParserException.
+    // TODO: Check all that returns unsigned long, or tuple containing it. If it equals to 0, then throw ParserException.
     return { new FunctionCallNode(this->tokens[index].content, std::get<0>(sequence)), std::get<1>(sequence) + 2 };
 }
 
