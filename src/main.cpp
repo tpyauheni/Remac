@@ -12,7 +12,7 @@
 #define VERSION_TAG " (dev)"
 
 int main() {
-    std::string input = "Print([21, 5 * (2 + 1)])";
+    std::string input;// = "Print([21, 5 * (2 + 1)])";
 
     std::printf(
         "Remac v.%u.%u.%u%s by Pakul Yauheni Stanislavovich\n",
@@ -23,7 +23,10 @@ int main() {
     );
     std::printf(">> ");
     std::fflush(stdout);
-    std::cout << "WARNING: Debug mode, so input automatically filled" << std::endl; // std::cin >> input;
+    // std::cout << "WARNING: Debug mode, so input automatically filled" << std::endl;
+    std::getline(std::cin, input);
+    // std::cin >> input;
+    std::cout << "Command: '" << input << "'" << std::endl;
     remac::Lexer lexer = remac::Lexer(input);
     std::vector<remac::Token> tokens;
 
