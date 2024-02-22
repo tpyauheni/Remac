@@ -1211,15 +1211,20 @@ std::tuple<AstNode *, unsigned long> Parser::parseStatement(unsigned long index)
                     throw new ParserException("Expected left parentheses ('(')");
                 }
 
-                std::tuple<AstNode *, unsigned long> condition = parseExpression(index + 1);
-                unsigned long length = 1 + std::get<1>(condition);
+                std::tuple<AstNode *, unsigned long> condition = parseExpression(index + 2);
+                unsigned long length = std::get<1>(condition) + 1;
 
-                if (this->tokens[index + length].type != TokenType::LBRACE) {
+                if (this->tokens[index + length + 2].type != TokenType::LBRACE) {
                     throw new ParserException("Expected left brace ('{')");
                 }
 
-                std::tuple<SequenceNode *, unsigned long> ifBranch = parseSequence(index + length + 2, TokenType::RBRACE);
+                std::tuple<SequenceNode *, unsigned long> ifBranch = parseSequence(index + length + 3, TokenType::RBRACE);
                 length += 2 + std::get<1>(ifBranch) + 2;
+
+                if (index + length + 2 >= this->tokens.size()) {
+                    return { new IfStatementNode(std::get<0>(condition), std::get<0>(ifBranch), new SequenceNode({})), length };
+                }
+
                 Token *elseToken = &this->tokens[index + length];
 
                 if (elseToken->type == TokenType::KEYWORD && elseToken->content == "else") {
@@ -1232,11 +1237,11 @@ std::tuple<AstNode *, unsigned long> Parser::parseStatement(unsigned long index)
                     }
 
                     std::tuple<SequenceNode *, unsigned long> elseSequence = this->parseSequence(index + length + 2, TokenType::RBRACE);
-                    length += std::get<1>(elseSequence);
-                    return { new IfStatementNode(std::get<0>(condition), std::get<0>(ifBranch), std::get<0>(elseSequence)), length + 2 };
+                    length += 3 + std::get<1>(elseSequence);
+                    return { new IfStatementNode(std::get<0>(condition), std::get<0>(ifBranch), std::get<0>(elseSequence)), length };
                 }
 
-                return { new IfStatementNode(std::get<0>(condition), std::get<0>(ifBranch), nullptr), length - 1 };
+                return { new IfStatementNode(std::get<0>(condition), std::get<0>(ifBranch), nullptr), length };
             }
         }
     }
@@ -1270,7 +1275,7 @@ std::tuple<AstNode *, unsigned long> Parser::parseExpression(unsigned long index
         std::vector<Token> unpriOperators;
 
         for (unsigned long i = index; i < this->tokens.size(); i++, length++) {
-            if (this->tokens[i].type == TokenType::RPAREN || this->tokens[i].type == TokenType::RBRACKET || this->tokens[i].type == TokenType::RBRACE) {
+            if (this->tokens[i].type == TokenType::RPAREN || this->tokens[i].type == TokenType::RBRACKET || this->tokens[i].type == TokenType::RBRACE || this->tokens[i].type == ARG_SEPARATOR) {
                 break;
             }
 
@@ -1354,7 +1359,7 @@ std::tuple<AstNode *, unsigned long> Parser::parseTerm(unsigned long index) {
             return listDefinition;
         }
         case TokenType::IDENTIFIER: {
-            if (this->tokens[index + 1].type == TokenType::RPAREN) {
+            if (this->tokens[index + 1].type == TokenType::LPAREN) {
                 std::tuple<FunctionCallNode *, unsigned long> functionCall = parseFunctionCall(index);
                 return functionCall;
             }
@@ -1407,7 +1412,8 @@ std::tuple<FunctionCallNode *, unsigned long> Parser::parseFunctionCall(unsigned
 }
 
 std::tuple<SequenceNode *, unsigned long> Parser::parseEnclosed(unsigned long index, TokenType stop) {
-    unsigned long length = 0;
+    ++index;
+    unsigned long length = 1;
     std::vector<AstNode *> nodes;
 
     while (index < this->tokens.size() && this->tokens[index].type != stop) {

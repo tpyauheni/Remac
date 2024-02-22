@@ -12,7 +12,7 @@ void test_parser() {
     remac::ProgramNode *program = parser.parse();
     test_condition(program->equals(new remac::ProgramNode(
         new remac::SequenceNode({
-            new remac::FunctionCallNode("Print", {})
+            new remac::FunctionCallNode("Print", new remac::SequenceNode({}))
         })
     )));
 }

@@ -52,6 +52,8 @@ std::optional<Token> Lexer::next() {
             case TokenType::LBRACE:
             case TokenType::LBRACKET:
             case TokenType::OPERATOR:
+            case TokenType::RBRACE:
+            case TokenType::IDENTIFIER:
             case TokenType::ARG_SEPARATOR: break;
 
             default: {
@@ -59,8 +61,20 @@ std::optional<Token> Lexer::next() {
             }
         }
 
-        this->prevType = TokenType::IDENTIFIER; // TODO: Add everywhere in token return
-        return this->nextIdentifier();
+        Token ident = this->nextIdentifier();
+
+        if (this->prevType == TokenType::RBRACE) {
+            if (ident.content != "else") {
+                return { Token { .type = TokenType::LEXER_ERROR, .content = "Unexpected identifier. May be you mean to use 'else'?", .line = this->line, .column = this->column } };
+            }
+        } else if (this->prevType == TokenType::IDENTIFIER) {
+            if (ident.content != "if") {
+                return { Token { .type = TokenType::LEXER_ERROR, .content = "Unexpected identifier. May be you mean to use 'else if'?", .line = line, .column = column } };
+            }
+        }
+
+        this->prevType = TokenType::IDENTIFIER;
+        return { ident };
     }
 
     if (utfCharInString(
@@ -146,6 +160,7 @@ std::optional<Token> Lexer::next() {
     if (chr.bytes[0] == Lexer::LBRACE) {
         switch (this->prevType) {
             case TokenType::KEYWORD:
+            case TokenType::IDENTIFIER: // just in case, if all keywords are still identifiers at the moment
             case TokenType::RPAREN: break;
 
             default: {
@@ -276,7 +291,7 @@ std::optional<Token> Lexer::next() {
 }
 
 Token Lexer::findKeyword(Token token) {
-    if (token.content == "if" || token.content == "while" || token.content == "for") {
+    if (token.type == TokenType::IDENTIFIER && (token.content == "if" || token.content == "else" || token.content == "while" || token.content == "for")) {
         return Token { .type = TokenType::KEYWORD, .content = token.content, .line = token.line, .column = token.column };
     }
 
@@ -504,6 +519,7 @@ std::string Token::to_string() {
         {TokenType::RBRACKET, "Right bracket"},
         {TokenType::OPERATOR, "Operator"},
         {TokenType::ARG_SEPARATOR, "Argument separator"},
+        {TokenType::STRING, "String"},
     };
     return "<Token type='" + map[this->type] + "', content='" + \
         this->content + "', line=" + std::to_string(this->line) + ":" + \

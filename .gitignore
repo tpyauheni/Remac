@@ -3,5 +3,5 @@ __pycache__/
 main
 *.exe
 out/
-out_test/
-main_test
+# out_test/
+# main_test
